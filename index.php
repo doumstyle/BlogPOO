@@ -1,31 +1,44 @@
 <?php
 
-include_once 'header.php';
+include_once 'config/config.php';
+include_once 'Model/Database.php';
+include_once 'Model/Article.php';
+
+// Connexion à la base de données
+$database = new Database();
+$pdo = $database->connect();
+
+$article = new Article($pdo);
+
+
+$action = isset($_GET['action']) ? $_GET['action'] : 'home'; // Action par défaut
+
+
+switch ($action) {
+  case 'home':
+    $articles = $article->getLastSixArticles();
+    include_once 'templates/home.php';
+    break;
+
+  case 'list':
+    $articles = $article->getArticles();
+    include_once 'templates/home.php';
+    break;
+
+  case 'show':
+    $articles = $article->getArticleById($_GET['id']);
+    include_once 'templates/article.php';
+    break;
+
+  default:
+    echo 'Page introuvable';
+    break;
+}
 
 ?>
 
-<h1 class="my-4 text-center">Bienvenue sur le Blog</h1>
-<h2 class="mb-4 text-center">Les derniers articles</h2>
-
-<div class="container">
-  <div class="row">
-
-    <div class="col-md-4 mb-4">
-      <div class="card h-100">
-        <img src="public/images/image1.jpg" alt="Photo de l'article" class="card-img-top"
-          style="height: 200px; object-fit: cover;">
-        <div class="card-body">
-          <h5 class="card-title"></h5>
-          <p class="card-text">...</p>
-          <a href="index.php?action=show&id=" class="btn btn-primary">Lire l'article</a>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</div>
 
 
 <?php
-include_once 'footer.php';
+include_once 'templates/footer.php';
 ?>
